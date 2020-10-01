@@ -41,3 +41,7 @@ generate:
     - name: grpc-gateway
       type: go
       output: ../../.gen/proto/go
+
+    - name: goclay
+      type: go
+      output: ../pb
