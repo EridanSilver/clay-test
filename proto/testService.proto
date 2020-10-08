@@ -9,12 +9,6 @@ service SampleService {
       get: "/v1/sample/foo/{a}" // GET request with variables A and Bar.B in the query path
     };
   }
-  rpc Bar(BarRequest) returns (BarResponse) {
-    option (google.api.http) = {
-      post: "/v1/sample/bar" // POST request with request in the body
-      body: "*"
-    };
-  }
 }
 
 message FooRequest {
@@ -22,15 +16,6 @@ message FooRequest {
 }
 
 message FooResponse {
-  int64 sum = 1;
-  string error = 2;
-}
-
-message BarRequest {
-  int64 a = 1;
-}
-
-message BarResponse {
   int64 sum = 1;
   string error = 2;
 }

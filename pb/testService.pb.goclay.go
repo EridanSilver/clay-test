@@ -145,53 +145,6 @@ func (d *SampleServiceDesc) RegisterHTTP(mux transport.Router) {
 		}
 	}
 
-	{
-		// Handler for Bar, binding: POST /v1/sample/bar
-		var h http.HandlerFunc
-		h = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			defer r.Body.Close()
-
-			unmFunc := unmarshaler_goclay_SampleService_Bar_0(r)
-			rsp, err := _SampleService_Bar_Handler(d.svc, r.Context(), unmFunc, d.opts.UnaryInterceptor)
-
-			if err != nil {
-				if err, ok := err.(httptransport.MarshalerError); ok {
-					httpruntime.SetError(r.Context(), r, w, errors.Wrap(err.Err, "couldn't parse request"))
-					return
-				}
-				httpruntime.SetError(r.Context(), r, w, err)
-				return
-			}
-
-			if ctxErr := r.Context().Err(); ctxErr != nil && ctxErr == context.Canceled {
-				w.WriteHeader(499) // Client Closed Request
-				return
-			}
-
-			_, outbound := httpruntime.MarshalerForRequest(r)
-			w.Header().Set("Content-Type", outbound.ContentType())
-			err = outbound.Marshal(w, rsp)
-			if err != nil {
-				httpruntime.SetError(r.Context(), r, w, errors.Wrap(err, "couldn't write response"))
-				return
-			}
-		})
-
-		h = httpmw.DefaultChain(h)
-
-		if isChi {
-			chiMux.Method("POST", pattern_goclay_SampleService_Bar_0, h)
-		} else {
-			mux.Handle(pattern_goclay_SampleService_Bar_0, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.Method != "POST" {
-					w.WriteHeader(http.StatusMethodNotAllowed)
-					return
-				}
-				h(w, r)
-			}))
-		}
-	}
-
 }
 
 type SampleService_httpClient struct {
@@ -255,57 +208,6 @@ func (c *SampleService_httpClient) Foo(ctx context.Context, in *FooRequest, opts
 	return &ret, errors.Wrap(err, "can't unmarshal response")
 }
 
-func (c *SampleService_httpClient) Bar(ctx context.Context, in *BarRequest, opts ...grpc.CallOption) (*BarResponse, error) {
-	mw, err := httpclient.NewMiddlewareGRPC(opts)
-	if err != nil {
-		return nil, err
-	}
-
-	path := pattern_goclay_SampleService_Bar_0_builder(in)
-
-	buf := bytes.NewBuffer(nil)
-
-	m := httpruntime.DefaultMarshaler(nil)
-
-	if err = m.Marshal(buf, in); err != nil {
-		return nil, errors.Wrap(err, "can't marshal request")
-	}
-
-	req, err := http.NewRequest("POST", c.host+path, buf)
-	if err != nil {
-		return nil, errors.Wrap(err, "can't initiate HTTP request")
-	}
-	req = req.WithContext(ctx)
-
-	req.Header.Add("Accept", m.ContentType())
-
-	req, err = mw.ProcessRequest(req)
-	if err != nil {
-		return nil, err
-	}
-	rsp, err := c.c.Do(req)
-	if err != nil {
-		return nil, errors.Wrap(err, "error from client")
-	}
-	defer rsp.Body.Close()
-
-	rsp, err = mw.ProcessResponse(rsp)
-	if err != nil {
-		return nil, err
-	}
-
-	if rsp.StatusCode >= 400 {
-		b, _ := ioutil.ReadAll(rsp.Body)
-		return nil, errors.Errorf("%v %v: server returned HTTP %v: '%v'", req.Method, req.URL.String(), rsp.StatusCode, string(b))
-	}
-
-	ret := BarResponse{}
-
-	err = m.Unmarshal(rsp.Body, &ret)
-
-	return &ret, errors.Wrap(err, "can't unmarshal response")
-}
-
 // patterns for SampleService
 var (
 	pattern_goclay_SampleService_Foo_0 = "/v1/sample/foo/{a}"
@@ -321,20 +223,6 @@ var (
 	}
 
 	unmarshaler_goclay_SampleService_Foo_0_boundParams = &utilities.DoubleArray{Encoding: map[string]int{"a": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
-
-	pattern_goclay_SampleService_Bar_0 = "/v1/sample/bar"
-
-	pattern_goclay_SampleService_Bar_0_builder = func(in *BarRequest) string {
-		values := url.Values{}
-
-		u := url.URL{
-			Path:     fmt.Sprintf("/v1/sample/bar"),
-			RawQuery: values.Encode(),
-		}
-		return u.String()
-	}
-
-	unmarshaler_goclay_SampleService_Bar_0_boundParams = &utilities.DoubleArray{Encoding: map[string]int{"": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
 // marshalers for SampleService
@@ -360,22 +248,6 @@ var (
 			return nil
 		}
 	}
-
-	unmarshaler_goclay_SampleService_Bar_0 = func(r *http.Request) func(interface{}) error {
-		return func(rif interface{}) error {
-			req := rif.(*BarRequest)
-
-			if err := errors.Wrap(runtime.PopulateQueryParameters(req, r.URL.Query(), unmarshaler_goclay_SampleService_Bar_0_boundParams), "couldn't populate query parameters"); err != nil {
-				return httpruntime.TransformUnmarshalerError(err)
-			}
-
-			inbound, _ := httpruntime.MarshalerForRequest(r)
-			if err := errors.Wrap(inbound.Unmarshal(r.Body, &req), "couldn't read request JSON"); err != nil {
-				return httptransport.NewMarshalerError(httpruntime.TransformUnmarshalerError(err))
-			}
-			return nil
-		}
-	}
 )
 
 var _swaggerDef_testService_proto = []byte(`{
@@ -391,32 +263,6 @@ var _swaggerDef_testService_proto = []byte(`{
     "application/json"
   ],
   "paths": {
-    "/v1/sample/bar": {
-      "post": {
-        "operationId": "SampleService_Bar",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/foopkgBarResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/foopkgBarRequest"
-            }
-          }
-        ],
-        "tags": [
-          "SampleService"
-        ]
-      }
-    },
     "/v1/sample/foo/{a}": {
       "get": {
         "operationId": "SampleService_Foo",
@@ -444,27 +290,6 @@ var _swaggerDef_testService_proto = []byte(`{
     }
   },
   "definitions": {
-    "foopkgBarRequest": {
-      "type": "object",
-      "properties": {
-        "a": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "foopkgBarResponse": {
-      "type": "object",
-      "properties": {
-        "sum": {
-          "type": "string",
-          "format": "int64"
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
     "foopkgFooResponse": {
       "type": "object",
       "properties": {
