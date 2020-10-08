@@ -10,7 +10,9 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/sirupsen/logrus v1.4.2
+	github.com/utrack/clay/doc/example v0.0.0-20200911151516-2c176b879836
 	github.com/utrack/clay/v2 v2.4.9
 	google.golang.org/genproto v0.0.0-20201006033701-bcad7cf615f2
 	google.golang.org/grpc v1.32.0
+	google.golang.org/grpc/examples v0.0.0-20201007173958-5af60402cd8c // indirect
 )
