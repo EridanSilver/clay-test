@@ -1,0 +1,8 @@
+GET http://localhost:8080/v1/user/getbyid
+Accept: application/json
+
+{
+"id":1
+}
+
+###
