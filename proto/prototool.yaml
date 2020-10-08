@@ -36,7 +36,7 @@ generate:
       # The path to output generated files to.
       # If the directory does not exist, it will be created when running generation.
       # This needs to be a relative path.
-      output: ../pb
+      output: ../pkg
 
     - name: grpc-gateway
       type: go
@@ -44,4 +44,4 @@ generate:
 
     - name: goclay
       type: go
-      output: ../pb
+      output: ../pkg

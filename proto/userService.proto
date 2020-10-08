@@ -1,0 +1,21 @@
+syntax = "proto3";
+package userdata;
+
+option go_package = "/pb/user";
+import "google/api/annotations.proto";
+
+service UserService {
+  rpc GetById(GetByIdRequest) returns (GetByIdResponse) {
+    option (google.api.http) = {
+      get: "/v1/user/getbyid" // GET request with variables A and Bar.B in the query path
+    };
+  }
+}
+
+message GetByIdRequest {
+  int64 id = 1;
+}
+
+message GetByIdResponse {
+  string data = 1;
+}
